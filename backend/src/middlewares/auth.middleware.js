@@ -33,9 +33,9 @@ async function authUser(req, res, next) {
         next()
 
     } catch (err) {
-console.log(err);
+        console.log(err);
         return res.status(401).json({
-            message: "Invalid token."
+            message: "Invalid token. Maybe it is expired. Login Again "
         })
     }
 

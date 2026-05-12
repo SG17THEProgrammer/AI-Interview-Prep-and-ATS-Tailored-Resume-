@@ -11,7 +11,7 @@ const NAV_ITEMS = [
     { id: 'roadmap', label: 'Road Map', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11" /></svg>) },
     {
         id: 'evaluation',
-        label: 'Tailored Resume',
+        label: 'Resume Insights',
         icon: (
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -168,7 +168,7 @@ const Interview = () => {
         report.matchScore >= 80 ? 'score--high' :
             report.matchScore >= 60 ? 'score--mid' : 'score--low'
 
-    // console.log(report);
+    console.log(report);
 
     return (
         <div className='interview-page'>
@@ -281,7 +281,7 @@ const Interview = () => {
 
                     {activeNav === 'roadmap' && (
                         <section>
-                            <div className='content-header'>
+                            <div className='content-header' style={{width:"45vw"}}>
                                 <h2>Preparation Road Map</h2>
                                 <span className='content-header__count'>{report.preparationPlan.length}-day plan</span>
                             </div>
@@ -300,7 +300,7 @@ const Interview = () => {
                                 {/* <span className='content-header__count'>{report.preparationPlan.length}-day plan</span> */}
                             </div>
 
-                            <div style={{ fontFamily: "sans-serif", padding: "16px", color: "#e5e7eb" }}>
+                            <div style={{ fontFamily: "sans-serif", padding: "16px", color: "#e5e7eb"  ,width:"55vw"}} className=''>
 
                                 {/* MATCHES */}
                                 <Section
@@ -331,14 +331,14 @@ const Interview = () => {
                                         </div>
                                     ))}
                                 </Section>
-
+<br />
                                 {/* RESUME IMPROVEMENTS */}
                                 <div style={{ marginTop: "20px" }}>
                                     <h3 style={{ marginBottom: "12px" }}>Resume Improvements</h3>
 
-                                    {report.resumeChanges.map((change, idx) => (
+                                    {report.resumeChanges.length >0 ? report.resumeChanges.map((change, idx) => (
                                         <ResumeChangeItem key={idx} change={change} />
-                                    ))}
+                                    )):<h4 style={{textAlign:"center" , color:"red"}}>No changes suggested</h4>}
                                 </div>
                             </div>
 

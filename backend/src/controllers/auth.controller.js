@@ -129,6 +129,11 @@ async function getMeController(req, res) {
 
     const user = await userModel.findById(req.user.id)
 
+    if(!user){
+         res.status(400).json({
+        message: "User not found",
+    })
+    }
 
 
     res.status(200).json({

@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react'
 import "../style/home.scss"
 import { useInterview } from '../hooks/useInterview.js'
 import { useNavigate } from 'react-router'
+import toast from 'react-hot-toast'
 
 const Home = () => {
 
@@ -9,6 +10,21 @@ const Home = () => {
     const [jobDescription, setJobDescription] = useState("")
     const [selfDescription, setSelfDescription] = useState("")
     const [fileName, setFileName] = useState("");
+    const [currentPage, setCurrentPage] = useState(1)
+
+    const reportsPerPage = 4
+
+    const totalPages = Math.ceil(reports.length / reportsPerPage)
+
+    const startIndex = (currentPage - 1) * reportsPerPage
+    const endIndex = startIndex + reportsPerPage
+
+    const currentReports = reports.slice(startIndex, endIndex)
+
+    const isInvalid =
+        jobDescription === "" ||
+        (fileName === "" && selfDescription === "");
+
 
     const resumeInputRef = useRef()
 
@@ -21,15 +37,24 @@ const Home = () => {
         }
     };
 
-      const handleRemoveFile = (e) => {
-    e.preventDefault(); // prevents label click
-    setFileName("");
-    if (resumeInputRef.current) {
-      resumeInputRef.current.value = ""; // reset input
-    }
-  };
-  
+    const handleRemoveFile = (e) => {
+        e.preventDefault(); // prevents label click
+        setFileName("");
+        if (resumeInputRef.current) {
+            resumeInputRef.current.value = ""; // reset input
+        }
+    };
+
     const handleGenerateReport = async () => {
+        if (isInvalid) {
+            toast.error("Fill in all required feilds")
+            return
+        }
+        if (jobDescription?.length > 5000) {
+            toast.error("Job description can't be more than 5000 characters")
+            return
+
+        }
         const resumeFile = resumeInputRef.current.files[0]
         const data = await generateReport({ jobDescription, selfDescription, resumeFile })
         navigate(`/interview/${data._id}`)
@@ -73,7 +98,7 @@ const Home = () => {
                             placeholder={`Paste the full job description here...\ne.g. 'Senior Frontend Engineer at Google requires proficiency in React, TypeScript, and large-scale system design...'`}
                             maxLength={5000}
                         />
-                        <div className='char-counter'>0 / 5000 chars</div>
+                        <div className='char-counter'>{jobDescription?.length} / 5000 chars</div>
                     </div>
 
                     {/* Vertical Divider */}
@@ -162,10 +187,12 @@ const Home = () => {
 
                 {/* Card Footer */}
                 <div className='interview-card__footer'>
-                    <span className='footer-info'>AI-Powered Strategy Generation &bull; Approx 30s</span>
+                    <span className='footer-info'>AI-Powered Strategy Generation</span>
                     <button
+                        disabled={isInvalid}
                         onClick={handleGenerateReport}
-                        className='generate-btn'>
+                        className='generate-btn'
+                    >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" /></svg>
                         Generate My Interview Strategy
                     </button>
@@ -177,7 +204,7 @@ const Home = () => {
                 <section className='recent-reports'>
                     <h2>My Recent Interview Plans</h2>
                     <ul className='reports-list'>
-                        {reports.map(report => (
+                        {currentReports.map(report => (
                             <li key={report._id} className='report-item' onClick={() => navigate(`/interview/${report._id}`)}>
                                 <h3>{report.title || 'Untitled Position'}</h3>
                                 <p className='report-meta'>Generated on {new Date(report.createdAt).toLocaleDateString()}</p>
@@ -185,6 +212,27 @@ const Home = () => {
                             </li>
                         ))}
                     </ul>
+                    <div className="pagination">
+
+                        <button
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(prev => prev - 1)}
+                        >
+                            Prev
+                        </button>
+
+                        <span>
+                            Page {currentPage} of {totalPages}
+                        </span>
+
+                        <button
+                            disabled={currentPage === totalPages}
+                            onClick={() => setCurrentPage(prev => prev + 1)}
+                        >
+                            Next
+                        </button>
+
+                    </div>
                 </section>
             )}
 

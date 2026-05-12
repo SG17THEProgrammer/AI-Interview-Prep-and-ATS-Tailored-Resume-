@@ -1,6 +1,7 @@
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../auth.context";
 import { login, register, logout, getMe } from "../services/auth.api";
+import toast from "react-hot-toast";
 
 
 
@@ -15,9 +16,25 @@ export const useAuth = () => {
         try {
             const data = await login({ email, password })
             console.log(data);
-            setUser(data.user)
+            if (data) {
+                setUser(data.user)
+                return {
+                    success: true , 
+                    message : data.message
+                }
+            }
+            else {
+                return {
+                    success: false,
+                    // message: "Feild is missing"
+                }
+            }
         } catch (err) {
-
+            console.log(err)
+            return {
+                success: false,
+                message: err.response.data.message || "Something went wrong"
+            }
         } finally {
             setLoading(false)
         }
@@ -53,9 +70,16 @@ export const useAuth = () => {
             try {
 
                 const data = await getMe()
-                console.log(data);
+                // console.log(data);
                 setUser(data.user)
-            } catch (err) { } finally {
+            } catch (err) {
+                if (err.response?.status === 401) {
+
+                    toast.error(err.response.data.message)
+
+                    setUser(null)
+                }
+            } finally {
                 setLoading(false)
             }
         }

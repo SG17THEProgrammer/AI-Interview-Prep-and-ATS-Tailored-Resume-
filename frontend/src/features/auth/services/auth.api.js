@@ -16,7 +16,7 @@ export async function register({ username, email, password }) {
         return response.data
 
     } catch (err) {
-
+        throw err 
         console.log(err)
 
     }
@@ -36,6 +36,7 @@ export async function login({ email, password }) {
         return response.data
 
     } catch (err) {
+        throw err
         console.log(err)
     }
 
@@ -49,7 +50,7 @@ export async function logout() {
         return response.data
 
     } catch (err) {
-
+throw err
     }
 }
 
@@ -58,11 +59,15 @@ export async function getMe() {
     try {
 
         const response = await api.get("/api/auth/get-me")
-        console.log(response);
+        
+        if(!response){
+            return "Cannot get Response"
+        }
 
         return response.data
 
     } catch (err) {
+        throw err
         console.log(err)
     }
 
