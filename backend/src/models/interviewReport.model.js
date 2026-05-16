@@ -94,7 +94,7 @@ const interviewReportSchema = new mongoose.Schema({
 
     decision: {
         type: String,
-        enum: ["APPLY", "SKIP"]
+        enum: ["APPLY", "SKIP" , "MAYBE"]
     },
 
     fit: fitSchema,

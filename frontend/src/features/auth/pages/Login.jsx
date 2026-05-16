@@ -16,10 +16,14 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         const result  = await handleLogin({ email, password })
+        console.log(result);
         if (result.success) {
             setEmail("")
             setPassword("")
-            navigate('/')
+            toast.success(result.message)
+            setTimeout(()=>{
+                navigate('/')
+            },2000)
         } else {
             toast.error(result.message)
         }

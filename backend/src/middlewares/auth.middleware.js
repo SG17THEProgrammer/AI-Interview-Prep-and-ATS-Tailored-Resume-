@@ -40,6 +40,38 @@ async function authUser(req, res, next) {
     }
 
 }
+async function authLogin(req, res, next) {
+    try {
+        const token = req.cookies.token
+
+        // No token → user is not logged in
+        if (!token) {
+            return next()
+        }
+
+        // Check blacklist
+        const isTokenBlacklisted = await tokenBlacklistModel.findOne({
+            token
+        })
+
+        if (isTokenBlacklisted) {
+            return next()
+        }
+
+        // Verify token
+        jwt.verify(token, process.env.JWT_SECRET)
+
+        // If token valid → already logged in
+        return res.status(403).json({
+            message: "You are already logged in"
+        })
+
+    } catch (err) {
+        console.log(err);
+        // Invalid/expired token → allow login again
+        return next()
+    }
+}
 
 
-module.exports = { authUser }
+module.exports = { authUser, authLogin }

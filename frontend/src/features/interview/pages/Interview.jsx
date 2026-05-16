@@ -361,7 +361,7 @@ const Interview = () => {
                             <span className='match-score__value'>{report.matchScore}</span>
                             <span className='match-score__pct'>%</span>
                         </div>
-                        <p className='match-score__sub' style={{ color: report.decision === "APPLY" ? "green" : "red" }}>Decision : {report.decision}</p>
+                        <p className='match-score__sub' style={{ color: report.decision === "APPLY" ? "green" : report.decision==="MAYBE" ? "yellow" : "red" }}>Decision : {report.decision}</p>
                     </div>
 
                     <div className='sidebar-divider' />

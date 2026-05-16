@@ -12,45 +12,45 @@ const client = new OpenAI({
 // -------------------- Schemas --------------------
 const interviewReportSchema = z.object({
  matchScore: z.number().min(0).max(100),
-  decision: z.enum(["APPLY", "SKIP"]),
+  decision: z.enum(["APPLY", "SKIP" ,"MAYBE"]),
     fit: z.object({
-    matches: z.array(z.string()),
-    gaps: z.array(z.string()),
+    matches: z.array(z.string()).default([]),
+    gaps: z.array(z.string()).default([]),
   }),
     resumeChanges: z.array(
     z.object({
       before: z.string(),
       after: z.string(),
     })
-  ),
-   criticalGaps: z.array(z.string()),
+  ).default([]),
+   criticalGaps: z.array(z.string()).default([]),
   technicalQuestions: z.array(
     z.object({
       question: z.string(),
       intention: z.string(),
       answer: z.string(),
     })
-  ),
+  ).default([]),
   behavioralQuestions: z.array(
     z.object({
       question: z.string(),
       intention: z.string(),
       answer: z.string(),
     })
-  ),
+  ).default([]),
   skillGaps: z.array(
     z.object({
       skill: z.string(),
       severity: z.enum(["low", "medium", "high"]),
     })
-  ),
+  ).default([]),
   preparationPlan: z.array(
     z.object({
       day: z.number(),
       focus: z.string(),
-      tasks: z.array(z.string()),
+      tasks: z.array(z.string()).default([]),
     })
-  ),
+  ).default([]),
   title: z.string(),
 });
 
@@ -77,15 +77,13 @@ async function generatePdfFromHtml(htmlContent) {
 export async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
  const system_prompt = `
 You are an expert ATS resume evaluator and interview preparation assistant for tech roles.
-
 You evaluate candidates strictly and generate structured interview preparation output.
-
+Also you provide certains changes according to the job description which helps candidates to get their resume shortlisted according to ATS. 
 ---
 
 ## CORE TASKS
-
 1. Evaluate job fit
-2. Decide APPLY or SKIP
+2. Decide APPLY or SKIP or MAYBE
 3. Suggest safe resume improvements (no hallucination)
 4. Generate interview preparation report in strict JSON format
 
@@ -94,8 +92,9 @@ You evaluate candidates strictly and generate structured interview preparation o
 ## DECISION RULE (ABSOLUTE)
 
 - Score is between 0 and 100
-- Score ≥ 70 → APPLY
-- Score < 70 → SKIP
+- Score ≥ 80 → APPLY
+- 50 <= Score < 80 → MAYBE
+- Score < 50 → SKIP
 
 DO NOT override this rule.
 
@@ -157,7 +156,7 @@ Return JSON matching this exact structure:
 {
   "title": string,
   "matchScore": number,
-  "decision": "APPLY" | "SKIP",
+  "decision": "APPLY" | "SKIP" | "MAYBE"",
   "fit": {
     "matches": string[],
     "gaps": string[]
