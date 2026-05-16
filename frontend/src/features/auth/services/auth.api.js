@@ -64,6 +64,8 @@ export async function getMe() {
             return "Cannot get Response"
         }
 
+        console.log(response);
+
         return response.data
 
     } catch (err) {

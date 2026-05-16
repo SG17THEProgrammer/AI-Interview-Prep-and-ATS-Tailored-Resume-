@@ -11,19 +11,19 @@ const client = new OpenAI({
 
 // -------------------- Schemas --------------------
 const interviewReportSchema = z.object({
- matchScore: z.number().min(0).max(100),
-  decision: z.enum(["APPLY", "SKIP" ,"MAYBE"]),
-    fit: z.object({
+  matchScore: z.number().min(0).max(100),
+  decision: z.enum(["APPLY", "SKIP", "MAYBE"]),
+  fit: z.object({
     matches: z.array(z.string()).default([]),
     gaps: z.array(z.string()).default([]),
   }),
-    resumeChanges: z.array(
+  resumeChanges: z.array(
     z.object({
       before: z.string(),
       after: z.string(),
     })
   ).default([]),
-   criticalGaps: z.array(z.string()).default([]),
+  criticalGaps: z.array(z.string()).default([]),
   technicalQuestions: z.array(
     z.object({
       question: z.string(),
@@ -46,7 +46,7 @@ const interviewReportSchema = z.object({
   ).default([]),
   preparationPlan: z.array(
     z.object({
-      day: z.number(),
+      day: z.coerce.number(),
       focus: z.string(),
       tasks: z.array(z.string()).default([]),
     })
@@ -75,7 +75,7 @@ async function generatePdfFromHtml(htmlContent) {
 
 // -------------------- Generate Interview Report --------------------
 export async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
- const system_prompt = `
+  const system_prompt = `
 You are an expert ATS resume evaluator and interview preparation assistant for tech roles.
 You evaluate candidates strictly and generate structured interview preparation output.
 Also you provide certains changes according to the job description which helps candidates to get their resume shortlisted according to ATS. 
@@ -139,7 +139,7 @@ The JSON must exactly follow the required schema provided in the user message.
 ---
 `;
 
-const user_prompt = `
+  const user_prompt = `
 Resume:
 ${resume}
 
@@ -201,8 +201,8 @@ Return JSON matching this exact structure:
   const response = await client.responses.create({
     model: "groq/compound-mini",
     input: [
-        { role: "system", content: system_prompt },
-        { role: "user", content: user_prompt },
+      { role: "system", content: system_prompt },
+      { role: "user", content: user_prompt },
 
     ],
   });
@@ -239,7 +239,7 @@ The output MUST be valid JSON only, without extra text.
   });
 
   const outputText = response.output_text || response.output?.[0]?.content?.[0]?.text;
-//   const jsonContent = JSON.parse(outputText);
+  //   const jsonContent = JSON.parse(outputText);
   const jsonContent = extractJson(outputText);
 
   const pdfBuffer = await generatePdfFromHtml(jsonContent.html);

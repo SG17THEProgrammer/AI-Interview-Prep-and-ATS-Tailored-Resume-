@@ -1,7 +1,27 @@
-import { useNavigate } from "react-router";
-
+// import { useNavigate } from "react-router";
+import axios from "axios"
+import toast from "react-hot-toast"
 export default function Navbar() {
   //  const navigate = useNavigate();
+  const handleLogout=async()=>{
+    const res = await axios.get("http://localhost:3000/api/auth/logout",{
+        withCredentials: true
+    })
+
+    console.log(res);
+
+    if(res){
+      toast.success(res.message)
+      setTimeout(()=>{
+        window.location.href = "/login"
+
+      },1000)
+    }
+    else{
+      toast.error("Failed to Logout")
+    }
+
+  }
   return (
     <nav
       style={{
@@ -83,7 +103,7 @@ export default function Navbar() {
         onMouseLeave={(e) =>
           (e.currentTarget.style.transform = "scale(1)")
         }
-      >
+      onClick={()=>handleLogout()}>
         Logout
       </button>
     </nav>

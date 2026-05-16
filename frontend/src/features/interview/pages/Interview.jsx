@@ -83,7 +83,13 @@ const itemStyle = {
     padding: "8px",
     marginBottom: "6px",
     lineHeight: "1.5",
-    fontSize:"0.9rem"
+    fontSize:"0.9rem",
+};
+
+const containerStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(4, 1fr)",
+  gap: "5px",
 };
 
 // ── Sub-components ────────────────────────────────────────────────────────────
@@ -310,11 +316,13 @@ const Interview = () => {
                                     isOpen={openSection.matches}
                                     onToggle={() => toggle("matches")}
                                 >
+                                <div style={containerStyle}>
                                     {report.fit.matches.map((item, idx) => (
                                         <div key={idx} style={itemStyle}>
                                             {item}
                                         </div>
                                     ))}
+                                    </div>
                                 </Section>
 
                                 {/* GAPS */}
@@ -325,11 +333,13 @@ const Interview = () => {
                                     isOpen={openSection.gaps}
                                     onToggle={() => toggle("gaps")}
                                 >
+                                <div style={containerStyle}>
                                     {report.fit.gaps.map((item, idx) => (
                                         <div key={idx} style={itemStyle}>
                                             {item}
                                         </div>
                                     ))}
+                                    </div>
                                 </Section>
 <br />
                                 {/* RESUME IMPROVEMENTS */}

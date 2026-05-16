@@ -1,3 +1,4 @@
+const fs = require("fs/promises")
 const pdfParse = require("pdf-parse")
 const { generateInterviewReport, generateResumePdf } = require("../services/ai.service")
 const interviewReportModel = require("../models/interviewReport.model")
@@ -9,66 +10,122 @@ const interviewReportModel = require("../models/interviewReport.model")
  * @description Controller to generate interview report based on user self description, resume and job description.
  */
 
+
 async function generateInterViewReportController(req, res) {
+
     try {
-        if (!req.file) {
-            return res.status(400).json({
-                message: "Resume file is required"
-            });
+
+        const { selfDescription, jobDescription } = req.body
+
+        let resumeText = ""
+
+        // CASE 1 → New uploaded file
+        if (req.file) {
+
+            const resumeContent =
+                await (
+                    new pdfParse.PDFParse(
+                        Uint8Array.from(req.file.buffer)
+                    )
+                ).getText()
+
+            resumeText = resumeContent.text
         }
 
-        // ✅ Correct PDF parsing
-        const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
+        // CASE 2 → Existing stored resume
+        else if (req.user.resume) {
 
-        const { selfDescription, jobDescription } = req.body;
+            const fileBuffer = await fs.readFile(
+                req.user.resume
+            )
 
-        // ✅ AI call
-        const aiResponse = await generateInterviewReport({
-            resume: resumeContent.text,
-            selfDescription,
-            jobDescription
-        });
+            const resumeContent =
+                await (
+                    new pdfParse.PDFParse(
+                        Uint8Array.from(fileBuffer)
+                    )
+                ).getText()
 
-        // ✅ Safe DB payload (prevents schema pollution)
+            resumeText = resumeContent.text
+        }
+
+        // NO resume anywhere
+        else if (!selfDescription) {
+
+            return res.status(400).json({
+                message:
+                    "Resume or self description required"
+            })
+        }
+
+        // AI call
+        const aiResponse =
+            await generateInterviewReport({
+                resume: resumeText,
+                selfDescription,
+                jobDescription
+            })
+
         const dbPayload = {
+
             user: req.user.id,
-            resume: resumeContent.text,
+
+            resume: resumeText,
+
             selfDescription,
+
             jobDescription,
 
             title: aiResponse.title,
+
             matchScore: aiResponse.matchScore,
+
             decision: aiResponse.decision,
 
             fit: aiResponse.fit,
 
-            resumeChanges: aiResponse.resumeChanges,
+            resumeChanges:
+                aiResponse.resumeChanges,
 
-            criticalGaps: aiResponse.criticalGaps,
+            criticalGaps:
+                aiResponse.criticalGaps,
 
-            technicalQuestions: aiResponse.technicalQuestions,
+            technicalQuestions:
+                aiResponse.technicalQuestions,
 
-            behavioralQuestions: aiResponse.behavioralQuestions,
+            behavioralQuestions:
+                aiResponse.behavioralQuestions,
 
-            skillGaps: aiResponse.skillGaps,
+            skillGaps:
+                aiResponse.skillGaps,
 
-            preparationPlan: aiResponse.preparationPlan
-        };
+            preparationPlan:
+                aiResponse.preparationPlan
+        }
 
-        const interviewReport = await interviewReportModel.create(dbPayload);
+        const interviewReport =
+            await interviewReportModel.create(
+                dbPayload
+            )
 
         return res.status(201).json({
-            message: "Interview report generated successfully.",
+            message:
+                "Interview report generated successfully.",
             interviewReport
-        });
+        })
 
     } catch (error) {
-        console.error("Interview report error:", error);
+
+        console.error(
+            "Interview report error:",
+            error
+        )
 
         return res.status(500).json({
-            message: "Failed to generate interview report",
+            message:
+                "Failed to generate interview report",
             error: error.message
-        });
+        })
     }
 }
 

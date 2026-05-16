@@ -1,45 +1,62 @@
 import React, { useState, useRef } from 'react'
 import "../style/home.scss"
 import { useInterview } from '../hooks/useInterview.js'
+import { useAuth } from "../../auth/hooks/useAuth.js"
 import { useNavigate } from 'react-router'
 import toast from 'react-hot-toast'
+import axios from 'axios'
 
 const Home = () => {
 
     const { loading, generateReport, reports } = useInterview()
+    const { user } = useAuth();
+    console.log(user);
     const [jobDescription, setJobDescription] = useState("")
     const [selfDescription, setSelfDescription] = useState("")
-    const [fileName, setFileName] = useState("");
+    const [fileName, setFileName] = useState(
+        user.resumeOriginalName || ""
+    )
     const [currentPage, setCurrentPage] = useState(1)
+    const [resume, setResume] = useState(null)
 
     const reportsPerPage = 4
-
+    
     const totalPages = Math.ceil(reports.length / reportsPerPage)
-
+    
     const startIndex = (currentPage - 1) * reportsPerPage
     const endIndex = startIndex + reportsPerPage
-
+    
     const currentReports = reports.slice(startIndex, endIndex)
-
+    
     const isInvalid =
-        jobDescription === "" ||
-        (fileName === "" && selfDescription === "");
-
-
+    jobDescription === "" ||
+    (fileName === "" && selfDescription === "");
+    
+    
     const resumeInputRef = useRef()
-
     const navigate = useNavigate()
 
+    console.log(resume instanceof File);
     const handleFileChange = (e) => {
         const file = e.target.files[0];
+        
         if (file) {
-            setFileName(file.name);
+            setResume(file)
+
+            setFileName(file.name)
+
+            setUseStoredResume(false)
         }
     };
+
+
 
     const handleRemoveFile = (e) => {
         e.preventDefault(); // prevents label click
         setFileName("");
+        setResume(null)
+
+
         if (resumeInputRef.current) {
             resumeInputRef.current.value = ""; // reset input
         }
@@ -55,8 +72,29 @@ const Home = () => {
             return
 
         }
-        const resumeFile = resumeInputRef.current.files[0]
-        const data = await generateReport({ jobDescription, selfDescription, resumeFile })
+
+        // Upload Resume First
+if (resume instanceof File){
+                const formData = new FormData()
+
+            formData.append("resume", resume)
+
+            const res = await axios.post(
+                "http://localhost:3000/api/user/upload-resume",
+                formData,
+                {
+                    withCredentials: true,
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                }
+            )
+
+        }
+
+// use uploaded file OR stored DB resume
+   const resumeFile = resume || user.resume || null
+           const data = await generateReport({ jobDescription, selfDescription, resumeFile })
         navigate(`/interview/${data._id}`)
     }
 

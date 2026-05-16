@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken")
 const tokenBlacklistModel = require("../models/blacklist.model")
-
+const userModel = require("../models/user.model")
 
 
 async function authUser(req, res, next) {
@@ -28,7 +28,17 @@ async function authUser(req, res, next) {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
-        req.user = decoded
+        // Fetch full user from DB
+        const user = await userModel.findById(decoded.id)
+
+        if (!user) {
+            return res.status(401).json({
+                message: "User not found"
+            })
+        }
+
+        // Attach complete user
+        req.user = user
 
         next()
 

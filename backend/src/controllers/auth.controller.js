@@ -141,7 +141,9 @@ async function getMeController(req, res) {
         user: {
             id: user._id,
             username: user.username,
-            email: user.email
+            email: user.email,
+            resume: user.resume,
+            resumeOriginalName: user.resumeOriginalName
         }
     })
 

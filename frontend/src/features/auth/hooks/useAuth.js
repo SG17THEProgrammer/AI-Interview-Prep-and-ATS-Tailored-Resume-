@@ -70,7 +70,7 @@ export const useAuth = () => {
             try {
 
                 const data = await getMe()
-                // console.log(data);
+                console.log(data);
                 setUser(data.user)
             } catch (err) {
                 if (err.response?.status === 401) {
