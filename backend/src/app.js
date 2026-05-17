@@ -1,13 +1,16 @@
 const express = require("express")
 const cookieParser = require("cookie-parser")
 const cors = require("cors")
+const connectToDB = require("./src/config/database")
 
 const app = express()
+
+connectToDB()
 
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: process.env.FRONTEND_URL,
     credentials: true
 }))
 app.use("/uploads", express.static("uploads"))
