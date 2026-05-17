@@ -8,7 +8,7 @@ export default function Navbar() {
         withCredentials: true
     })
 
-    console.log(res);
+    // console.log(res);
 
     if(res){
       toast.success(res.message)

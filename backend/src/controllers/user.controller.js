@@ -12,7 +12,7 @@ async function uploadResumeController(req, res) {
         const user = await userModel.findByIdAndUpdate(
             req.user._id,
             {
-                resume: req.file.path,
+                resume: req.file.path.replace(/\\/g, "/"),
                 resumeOriginalName: req.file.originalname
             },
             { returnDocument: "after" })

@@ -174,7 +174,7 @@ const Interview = () => {
         report.matchScore >= 80 ? 'score--high' :
             report.matchScore >= 60 ? 'score--mid' : 'score--low'
 
-    console.log(report);
+    // console.log(report);
 
     return (
         <div className='interview-page'>

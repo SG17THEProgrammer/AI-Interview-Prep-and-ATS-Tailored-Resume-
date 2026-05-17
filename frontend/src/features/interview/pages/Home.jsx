@@ -10,7 +10,7 @@ const Home = () => {
 
     const { loading, generateReport, reports } = useInterview()
     const { user } = useAuth();
-    console.log(user);
+    // console.log(user);
     const [jobDescription, setJobDescription] = useState("")
     const [selfDescription, setSelfDescription] = useState("")
     const [fileName, setFileName] = useState(
@@ -36,7 +36,7 @@ const Home = () => {
     const resumeInputRef = useRef()
     const navigate = useNavigate()
 
-    console.log(resume instanceof File);
+    // console.log(resume instanceof File);
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         

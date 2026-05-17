@@ -40,10 +40,8 @@ async function generateInterViewReportController(req, res) {
 
         // CASE 2 → Existing stored resume
         else if (req.user.resume) {
-
-            const absolutePath = path.resolve(
-                req.user.resume
-            )
+            const normalizedPath = req.user.resume.replace(/\\/g, "/")
+            const absolutePath = path.resolve(normalizedPath)
 
             const fileBuffer = await fs.readFile(
                 absolutePath
