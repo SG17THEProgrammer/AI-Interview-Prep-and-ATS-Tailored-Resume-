@@ -26,7 +26,11 @@ app.use("/api/auth", authRouter)
 app.use("/api/interview", interviewRouter)
 app.use("/api/user", userRouter)
 
-
+app.get("/", (req, res) => {
+    res.status(200).json({
+        message: "Welcome to the AI Resume Builder API"
+    })
+})
 
 
 module.exports = app
