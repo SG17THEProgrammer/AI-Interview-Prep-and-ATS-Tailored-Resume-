@@ -1,7 +1,7 @@
 const express = require("express")
 const cookieParser = require("cookie-parser")
 const cors = require("cors")
-const connectToDB = require("./src/config/database")
+const connectToDB = require("./config/database")
 
 const app = express()
 
