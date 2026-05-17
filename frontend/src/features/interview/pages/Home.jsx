@@ -80,7 +80,7 @@ if (resume instanceof File){
             formData.append("resume", resume)
 
             const res = await axios.post(
-                "http://localhost:3000/api/user/upload-resume",
+                `${import.meta.env.VITE_BACKEND_URL}/api/user/upload-resume`,
                 formData,
                 {
                     withCredentials: true,

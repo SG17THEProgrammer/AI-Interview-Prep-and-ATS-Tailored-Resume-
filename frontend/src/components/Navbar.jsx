@@ -4,7 +4,7 @@ import toast from "react-hot-toast"
 export default function Navbar() {
   //  const navigate = useNavigate();
   const handleLogout=async()=>{
-    const res = await axios.get("http://localhost:3000/api/auth/logout",{
+    const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`,{
         withCredentials: true
     })
 
