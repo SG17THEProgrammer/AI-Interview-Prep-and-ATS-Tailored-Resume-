@@ -1,11 +1,11 @@
 const express = require("express")
 const cookieParser = require("cookie-parser")
 const cors = require("cors")
-const connectToDB = require("./config/database")
+// const connectToDB = require("./config/database")
 
 const app = express()
 
-connectToDB()
+// connectToDB()
 
 app.use(express.json())
 app.use(cookieParser())
@@ -31,6 +31,8 @@ app.get("/", (req, res) => {
         message: "Welcome to the AI Resume Builder API"
     })
 })
+
+
 
 
 module.exports = app
