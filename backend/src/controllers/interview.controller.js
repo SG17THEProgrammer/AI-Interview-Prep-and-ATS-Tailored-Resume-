@@ -1,4 +1,5 @@
 const fs = require("fs/promises")
+const path = require("path")
 const canvas = require("@napi-rs/canvas");
 
 global.DOMMatrix = canvas.DOMMatrix;
@@ -8,7 +9,6 @@ global.Path2D = canvas.Path2D;
 const pdfParse = require("pdf-parse")
 const { generateInterviewReport, generateResumePdf } = require("../services/ai.service")
 const interviewReportModel = require("../models/interviewReport.model")
-
 
 
 
@@ -41,8 +41,12 @@ async function generateInterViewReportController(req, res) {
         // CASE 2 → Existing stored resume
         else if (req.user.resume) {
 
-            const fileBuffer = await fs.readFile(
+            const absolutePath = path.resolve(
                 req.user.resume
+            )
+
+            const fileBuffer = await fs.readFile(
+                absolutePath
             )
 
             const resumeContent =
