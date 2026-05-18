@@ -6,7 +6,8 @@ global.DOMMatrix = canvas.DOMMatrix;
 global.ImageData = canvas.ImageData;
 global.Path2D = canvas.Path2D;
 
-const pdfParse = require("pdf-parse")
+// const pdfParse = require("pdf-parse")
+const pdf = require("pdf-parse")
 const { generateInterviewReport, generateResumePdf } = require("../services/ai.service")
 const interviewReportModel = require("../models/interviewReport.model")
 
