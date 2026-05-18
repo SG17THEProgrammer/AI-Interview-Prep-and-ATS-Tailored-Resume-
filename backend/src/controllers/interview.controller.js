@@ -28,12 +28,7 @@ async function generateInterViewReportController(req, res) {
         // CASE 1 → New uploaded file
         if (req.file) {
 
-            const resumeContent =
-                await (
-                    new pdfParse.PDFParse(
-                        Uint8Array.from(req.file.buffer)
-                    )
-                ).getText()
+            const resumeContent = await pdf(req.file.buffer)
 
             resumeText = resumeContent.text
         }
@@ -50,14 +45,7 @@ async function generateInterViewReportController(req, res) {
                     }
                 )
 
-            const resumeContent =
-                await (
-                    new pdfParse.PDFParse(
-                        Uint8Array.from(
-                            response.data
-                        )
-                    )
-                ).getText()
+            const resumeContent = await pdf(response.data)
 
             resumeText =
                 resumeContent.text
