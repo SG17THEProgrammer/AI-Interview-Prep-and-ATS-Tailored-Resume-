@@ -33,7 +33,7 @@ export const useAuth = () => {
             console.log(err)
             return {
                 success: false,
-                message: err.response.data.message || "Something went wrong"
+                message: err?.response?.data?.message || "Something went wrong"
             }
         } finally {
             setLoading(false)

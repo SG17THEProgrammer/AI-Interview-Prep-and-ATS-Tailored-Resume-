@@ -10,7 +10,7 @@ const pdfParse = require("pdf-parse")
 const { generateInterviewReport, generateResumePdf } = require("../services/ai.service")
 const interviewReportModel = require("../models/interviewReport.model")
 
-
+const axios = require("axios")
 
 /**
  * @description Controller to generate interview report based on user self description, resume and job description.
@@ -40,21 +40,27 @@ async function generateInterViewReportController(req, res) {
 
         // CASE 2 → Existing stored resume
         else if (req.user.resume) {
-            const normalizedPath = req.user.resume.replace(/\\/g, "/")
-            const absolutePath = path.resolve(normalizedPath)
 
-            const fileBuffer = await fs.readFile(
-                absolutePath
-            )
+            const response =
+                await axios.get(
+                    req.user.resume,
+                    {
+                        responseType:
+                            "arraybuffer"
+                    }
+                )
 
             const resumeContent =
                 await (
                     new pdfParse.PDFParse(
-                        Uint8Array.from(fileBuffer)
+                        Uint8Array.from(
+                            response.data
+                        )
                     )
                 ).getText()
 
-            resumeText = resumeContent.text
+            resumeText =
+                resumeContent.text
         }
 
         // NO resume anywhere

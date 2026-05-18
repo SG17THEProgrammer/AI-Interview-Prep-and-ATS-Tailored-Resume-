@@ -20,32 +20,32 @@ const Home = () => {
     const [resume, setResume] = useState(null)
 
     const reportsPerPage = 4
-    
+
     const totalPages = Math.ceil(reports.length / reportsPerPage)
-    
+
     const startIndex = (currentPage - 1) * reportsPerPage
     const endIndex = startIndex + reportsPerPage
-    
+
     const currentReports = reports.slice(startIndex, endIndex)
-    
+
     const isInvalid =
-    jobDescription === "" ||
-    (fileName === "" && selfDescription === "");
-    
-    
+        jobDescription === "" ||
+        (fileName === "" && selfDescription === "");
+
+
     const resumeInputRef = useRef()
     const navigate = useNavigate()
 
     // console.log(resume instanceof File);
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        
+
         if (file) {
             setResume(file)
 
             setFileName(file.name)
 
-            setUseStoredResume(false)
+            // setUseStoredResume(false)
         }
     };
 
@@ -74,8 +74,8 @@ const Home = () => {
         }
 
         // Upload Resume First
-if (resume instanceof File){
-                const formData = new FormData()
+        if (resume instanceof File) {
+            const formData = new FormData()
 
             formData.append("resume", resume)
 
@@ -92,9 +92,9 @@ if (resume instanceof File){
 
         }
 
-// use uploaded file OR stored DB resume
-   const resumeFile = resume || user.resume || null
-           const data = await generateReport({ jobDescription, selfDescription, resumeFile })
+        // use uploaded file OR stored DB resume
+        const resumeFile = resume || user.resume || null
+        const data = await generateReport({ jobDescription, selfDescription, resumeFile })
         navigate(`/interview/${data._id}`)
     }
 

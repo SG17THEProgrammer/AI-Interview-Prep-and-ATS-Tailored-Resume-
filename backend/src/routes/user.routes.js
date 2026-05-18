@@ -1,10 +1,14 @@
 const express = require("express")
 const router = express.Router()
 
-const authMiddleware = require("../middlewares/auth.middleware")
-const upload = require("../middlewares/upload.middleware")
+const authMiddleware =
+    require("../middlewares/auth.middleware")
 
-const userController = require("../controllers/user.controller")
+const upload =
+    require("../middlewares/file.middleware")
+
+const userController =
+    require("../controllers/user.controller")
 
 router.post(
     "/upload-resume",

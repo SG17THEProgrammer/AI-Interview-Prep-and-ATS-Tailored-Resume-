@@ -1,4 +1,6 @@
 const userModel = require("../models/user.model")
+const cloudinary = require("../config/cloudinary")
+const  streamifier = require( "streamifier")
 
 async function uploadResumeController(req, res) {
     try {
@@ -9,15 +11,36 @@ async function uploadResumeController(req, res) {
             })
         }
 
+         const uploadResult = await new Promise(
+            (resolve, reject) => {
+
+                const stream =
+                    cloudinary.uploader.upload_stream(
+                        {
+                            resource_type: "raw",
+                            folder: "resumes"
+                        },
+                        (error, result) => {
+
+                            if (error) reject(error)
+                            else resolve(result)
+                        }
+                    )
+
+                streamifier
+                    .createReadStream(req.file.buffer)
+                    .pipe(stream)
+            }
+        )
+
         const user = await userModel.findByIdAndUpdate(
             req.user._id,
             {
-                resume: req.file.path.replace(/\\/g, "/"),
+                resume: uploadResult.secure_url,
                 resumeOriginalName: req.file.originalname
             },
             { returnDocument: "after" })
 
-        console.log(user);
 
         res.status(200).json({
             message: "Resume uploaded successfully",
